@@ -3,147 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Sensor Hidroponik</title>
+    <title>Monitoring Hidroponik IoT</title>
     <style>
-        /* Gaya umum untuk halaman */
+        /* Background utama */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
+            background-size: cover;
         }
 
+        /* Kontainer utama */
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparan background */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px); /* Blur effect untuk kontainer */
+        }
+
+        /* Judul */
         h1 {
             text-align: center;
-            color: #2c3e50;
+            color: #4caf50;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
         }
 
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary {
+        /* Sensor data section */
+        .sensor-data {
             display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
+            justify-content: space-between;
+            margin: 20px 0;
         }
 
-        .summary div {
+        .sensor {
+            flex: 1;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* Gradient background untuk setiap sensor */
+            padding: 20px;
+            margin: 0 10px;
+            border-radius: 12px;
             text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out; /* Efek transisi */
         }
 
-        .summary h2 {
-            color: #2980b9;
+        .sensor:hover {
+            transform: scale(1.05); /* Efek hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        .sensor h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
         }
 
-        th, td {
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #2980b9;
-            color: white;
-        }
-
-        td {
+        .sensor p {
+            font-size: 2rem;
+            margin: 0;
             color: #333;
         }
 
-        /* Gaya untuk footer */
         footer {
             text-align: center;
-            margin-top: 20px;
-            color: #888;
+            margin-top: 30px;
+            font-size: 1rem;
+            color: #333;
         }
+
+        /* Responsif */
+        @media (max-width: 600px) {
+            .sensor-data {
+                flex-direction: column;
+            }
+
+            .sensor {
+                margin: 10px 0;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <h1>Data Monitoring Hidroponik</h1>
     <div class="container">
-        <div class="summary">
-            <div>
-                <h2>Suhu Maksimum</h2>
-                <p id="suhuMax"></p>
+        <h1>Monitoring Hidroponik IoT</h1>
+        <div id="data">
+            <div class="sensor-data">
+                <div class="sensor" id="temperature">
+                    <h2>Suhu</h2>
+                    <p id="tempValue">-- °C</p>
+                </div>
+                <div class="sensor" id="humidity">
+                    <h2>Kelembapan</h2>
+                    <p id="humidityValue">-- %</p>
+                </div>
             </div>
-            <div>
-                <h2>Suhu Minimum</h2>
-                <p id="suhuMin"></p>
-            </div>
-            <div>
-                <h2>Suhu Rata-rata</h2>
-                <p id="suhuRata"></p>
+            <div class="sensor-data">
+                <div class="sensor" id="turbidity">
+                    <h2>Kekeruhan</h2>
+                    <p id="turbidityValue">-- NTU</p>
+                </div>
+                <div class="sensor" id="ph">
+                    <h2>pH</h2>
+                    <p id="phValue">--</p>
+                </div>
             </div>
         </div>
-
-        <h3>Data Sensor Suhu dan Kelembaban</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Index</th>
-                    <th>Suhu (°C)</th>
-                    <th>Kelembaban (%)</th>
-                    <th>Kecerahan (%)</th>
-                    <th>Waktu</th>
-                </tr>
-            </thead>
-            <tbody id="sensorData"></tbody>
-        </table>
-
-        <h3>Month-Year Max Record</h3>
-        <ul id="monthYearMax"></ul>
+        <footer>Data di-update secara real-time</footer>
     </div>
-    
-    <footer>
-        <p>Monitoring Hidroponik by Internet of Things (IoT)</p>
-    </footer>
 
     <script>
-        // Mendapatkan data JSON dari backend
-        fetch('http://localhost:3000/data')
-            .then(response => response.json())
-            .then(data => {
-                // Menampilkan data ringkasan suhu
-                document.getElementById('suhuMax').textContent = data.suhuMax + ' °C';
-                document.getElementById('suhuMin').textContent = data.suhuMin + ' °C';
-                document.getElementById('suhuRata').textContent = data.suhuRata + ' °C';
+        // Fungsi untuk mengambil data sensor dari server
+        async function fetchSensorData() {
+            try {
+                const response = await fetch('http://localhost:3000/data'); // Ganti dengan URL backend Anda
+                const data = await response.json();
 
-                // Menampilkan data sensor dalam tabel
-                const sensorDataContainer = document.getElementById('sensorData');
-                data.nilai_suhu_max_humid_max_min.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.idx}</td>
-                        <td>${item.suhu}</td>
-                        <td>${item.kelembaban}</td>
-                        <td>${item.kecerahan}</td>
-                        <td>${item.timestamp}</td>
-                    `;
-                    sensorDataContainer.appendChild(row);
-                });
+                // Update tampilan dengan data sensor
+                document.getElementById('tempValue').textContent = data.suhuRata + ' °C';  // Menampilkan suhu rata-rata
+                document.getElementById('humidityValue').textContent = data.kelembapan + ' %';  // Menampilkan kelembapan
+                document.getElementById('turbidityValue').textContent = data.kekeruhan + ' NTU';  // Menampilkan kekeruhan
+                document.getElementById('phValue').textContent = data.ph;  // Menampilkan pH
+            } catch (error) {
+                console.error("Error fetching sensor data:", error);
+            }
+        }
 
-                // Menampilkan month-year max record
-                const monthYearContainer = document.getElementById('monthYearMax');
-                data.month_year_max.forEach(item => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `Bulan-Tahun: ${item.month_year}`;
-                    monthYearContainer.appendChild(listItem);
-                });
-            })
-            .catch(error => console.error('Error fetching data:', error));
+        // Update data setiap 5 detik
+        setInterval(fetchSensorData, 5000);
+
+        // Panggil fungsi pertama kali saat halaman dimuat
+        fetchSensorData();
     </script>
 </body>
 </html>
